@@ -13,26 +13,68 @@ O escalonamento de CPU é o processo pelo qual o sistema operacional decide qual
 
 ## 🎯 Algoritmos Implementados
 
-### 1. FCFS (First-Come First-Served)
-**Como funciona**: O primeiro processo que chega é o primeiro a ser executado.
+### **1. FCFS (First-Come First-Served)**
+
+**Como funciona:**
+```javascript
+// Pseudo-código simplificado
+_selectNext() {
+    return this.ready.shift(); // Pega o primeiro da fila
+}
+```
+
+**Características:**
 - ✅ **Simples** de implementar
-- ❌ **Convoy Effect**: Processos longos atrasam os curtos
-- 📖 **Exemplo**: Como uma fila de banco - quem chega primeiro é atendido primeiro
+- ❌ **Convoy Effect**: Processo longo bloqueia todos os outros
+- 🎯 **Uso ideal**: Sistemas batch, operações sequenciais
 
-### 2. Round Robin
-**Como funciona**: Cada processo recebe um tempo fixo (quantum) para executar.
-- ✅ **Justo** para todos os processos
-- ✅ **Responsivo** para sistemas interativos
-- ⚠️ **Context Switch**: Trocar muito entre processos tem custo
-- 📖 **Exemplo**: Como revezar um videogame - cada um joga por 5 minutos
+**Exemplo Visual:**
+```
+Tempo: 0  1  2  3  4  5  6  7  8
+P1:    [██████████████████████] (longo)
+P2:                         [██] (rápido, mas espera)
+P3:                           [██]
+```
 
-### 3. EDF (Earliest Deadline First)
-**Como funciona**: O processo com deadline mais próximo executa primeiro.
-- ✅ **Otimizado** para sistemas de tempo real
-- ✅ **Dinâmico**: Prioridades mudam conforme deadlines
-- ❌ **Complexo** de implementar
-- 📖 **Exemplo**: Como fazer tarefas escolares - a que vence primeiro tem prioridade
+### **2. Round Robin**
 
+**Conceito Fundamental: Quantum (Time Slice)**
+- **Quantum pequeno** (1-2ms): Responsivo, mas muito overhead
+- **Quantum grande** (100ms+): Vira FCFS, perde responsividade
+- **Quantum ideal**: 10-50ms (depende do sistema)
+
+**Implementação Interessante:**
+```javascript
+// Diferença crucial do FCFS
+add(task) { 
+    this.ready.push(task); // Vai para o FINAL da fila
+}
+
+timeSlice() { 
+    return this.quantum; // Diz quando preemptar
+}
+```
+
+**Preempção Explicada:**
+- **O que é**: Interromper um processo em execução
+- **Quando**: Quantum expira
+- **Como**: Processo volta para final da fila
+
+### **3. EDF (Earliest Deadline First)**
+
+**Inteligência do Algoritmo:**
+```javascript
+_selectNext() {
+    return this.ready.sort((a, b) => {
+        // Prioridade: deadline mais próximo
+        if (a.deadline !== b.deadline) {
+            return a.deadline - b.deadline;
+        }
+        // Desempate: ordem de chegada
+        return a.arrival - b.arrival;
+    }).shift();
+}
+```
 ## 🚀 Como Usar
 
 ### Pré-requisitos
@@ -85,6 +127,49 @@ real-time-discrete-event-scheduler/
         ├── Queue.js        # Visualização da fila
         └── Stats.js        # Estatísticas de performance
 ```
+
+### **Padrão Arquitetural: Event-Driven (Orientado a Eventos)**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                        EventBus                            │
+│          (Sistema de Comunicação Central)                  │
+└─────────────┬─────────────┬─────────────┬─────────────────┘
+              │             │             │
+    ┌─────────▼──────┐ ┌────▼────┐ ┌──────▼─────────┐
+    │   Simulation   │ │  Clock  │ │  UI Components │
+    │   (Orquestra)  │ │ (Tempo) │ │   (Visualiza)  │
+    └─────────┬──────┘ └─────────┘ └────────────────┘
+              │
+    ┌─────────▼──────────────────────────────────────┐
+    │              Schedulers                        │
+    │  ┌─────────┐ ┌─────────────┐ ┌─────────────┐  │
+    │  │  FCFS   │ │ Round Robin │ │     EDF     │  │
+    │  └─────────┘ └─────────────┘ └─────────────┘  │
+    └────────────────────────────────────────────────┘
+```
+### **Principais Componentes**
+
+#### **1. EventBus (Comunicação)**
+- **Problema que resolve**: Como fazer componentes conversarem sem acoplamento?
+- **Solução**: Padrão Observer/Pub-Sub
+- **Exemplo prático**: Quando um processo termina, múltiplos componentes precisam saber (gráfico, estatísticas, fila)
+
+#### **2. Clock (Tempo Discreto)**
+- **Conceito**: Tempo lógico vs. tempo real
+- **Implementação**: Ticks a cada 300ms (configurável)
+- **Por que discreto?**: Simula como SOs realmente funcionam - decisões tomadas em intervalos regulares
+
+#### **3. Simulation (Motor Principal)**
+- **Responsabilidades**:
+  - Gerenciar chegada de novos processos
+  - Verificar processos em execução
+  - Fazer preempção quando necessário
+  - Manter estatísticas
+
+#### **4. SchedulerBase (Hierarquia de Classes)**
+- **Padrão**: Template Method
+- **Vantagem**: Código comum compartilhado, comportamentos específicos customizáveis
 
 ## 🎨 Tecnologias Utilizadas
 
