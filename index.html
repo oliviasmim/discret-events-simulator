@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulador de Escalonamento de CPU</title>
+  <meta name="description" content="Simulador interativo para visualizar algoritmos de escalonamento de CPU em tempo real" />
+  <meta name="keywords" content="escalonamento, CPU, algoritmos, FCFS, Round Robin, EDF, sistemas operacionais" />
+  <meta name="author" content="Simulador Educacional" />
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="styles.css" />
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🖥️</text></svg>" />
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-slate-100 flex flex-col min-h-screen p-4 gap-6">
+  <header class="text-center mb-4">
+    <h1 class="text-4xl font-bold bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent mb-2">
+      🖥️ Simulador de Eventos
+    </h1>
+    <p class="text-slate-300 text-lg">Visualize algoritmos de escalonamento em tempo real</p>
+  </header>
+
+  <!-- Instructions Section -->
+  <section class="control-panel mb-6 fade-in">
+    <h2 class="text-xl font-semibold mb-4 text-emerald-400">📚 Como usarL</h2>
+    <div class="grid md:grid-cols-3 gap-4 text-sm instruction-grid">
+      <div class="instruction-card">
+        <h3 class="font-semibold text-blue-400 mb-2">1️⃣ Escolha o algoritmo</h3>
+        <ul class="text-slate-300 space-y-1">
+          <li><strong>FCFS:</strong> Primeiro a chegar, primeiro a ser executado</li>
+          <li><strong>Round Robin:</strong> Fatias de tempo iguais para cada processo</li>
+          <li><strong>EDF:</strong> Prioridade para menor deadline</li>
+        </ul>
+      </div>
+      <div class="instruction-card">
+        <h3 class="font-semibold text-purple-400 mb-2">2️⃣ Configure os parâmetros</h3>
+        <ul class="text-slate-300 space-y-1">
+          <li><strong>Quantum:</strong> Tempo de CPU para Round Robin</li>
+          <li><strong>Iniciar:</strong> Começa a simulação</li>
+          <li><strong>Parar:</strong> Interrompe a execução</li>
+        </ul>
+      </div>
+      <div class="instruction-card">
+        <h3 class="font-semibold text-orange-400 mb-2">3️⃣ Observe os Resultados</h3>
+        <ul class="text-slate-300 space-y-1">
+          <li><strong>Gráfico de Gantt:</strong> Execução visual dos processos</li>
+          <li><strong>Fila:</strong> Processos aguardando execução</li>
+          <li><strong>Estatísticas:</strong> Métricas de performance</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Algorithm Explanation Section -->
+  <section class="control-panel mb-6 fade-in">
+    <h2 class="text-xl font-semibold mb-4 text-emerald-400">🧠 Algoritmos de escalonamento</h2>
+    <div class="grid md:grid-cols-3 gap-6 algorithm-cards">
+      
+      <!-- FCFS Algorithm -->
+      <div class="algorithm-card bg-gradient-to-br from-blue-900/30 to-blue-800/20 border border-blue-500/30">
+        <div class="algorithm-header">
+          <h3 class="text-lg font-semibold text-blue-400 mb-2">🏃‍♂️ FCFS</h3>
+          <p class="text-xs text-blue-300 mb-3">First-Come First-Served</p>
+        </div>
+        
+        <div class="algorithm-content">
+          <h4 class="font-semibold text-slate-200 mb-2">Como funciona:</h4>
+          <ul class="text-sm text-slate-300 space-y-1 mb-4">
+            <li>• Processos são executados na ordem de chegada</li>
+            <li>• Não há preempção (interrupção)</li>
+            <li>• Processo roda até completar</li>
+          </ul>
+          
+          <h4 class="font-semibold text-slate-200 mb-2">Características:</h4>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="stat-item positive">
+              <span class="text-green-400">✓</span> Simples
+            </div>
+            <div class="stat-item negative">
+              <span class="text-red-400">✗</span> Convoy Effect
+            </div>
+            <div class="stat-item positive">
+              <span class="text-green-400">✓</span> Justo
+            </div>
+            <div class="stat-item negative">
+              <span class="text-red-400">✗</span> Tempo de espera alto
+            </div>
+          </div>
+          
+          <div class="algorithm-impact mt-3 p-2 bg-blue-900/20 rounded">
+            <p class="text-xs text-blue-200">
+              <strong>Impacto:</strong> Ideal para sistemas batch. Processos longos podem bloquear os curtos.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Round Robin Algorithm -->
+      <div class="algorithm-card bg-gradient-to-br from-purple-900/30 to-purple-800/20 border border-purple-500/30">
+        <div class="algorithm-header">
+          <h3 class="text-lg font-semibold text-purple-400 mb-2">⏰ Round Robin</h3>
+          <p class="text-xs text-purple-300 mb-3">Fatias de Tempo Circulares</p>
+        </div>
+        
+        <div class="algorithm-content">
+          <h4 class="font-semibold text-slate-200 mb-2">Como funciona:</h4>
+          <ul class="text-sm text-slate-300 space-y-1 mb-4">
+            <li>• Cada processo recebe um quantum de tempo</li>
+            <li>• Após o quantum, processo vai para o final da fila</li>
+            <li>• Preempção por tempo (time-slice)</li>
+          </ul>
+          
+          <h4 class="font-semibold text-slate-200 mb-2">Características:</h4>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="stat-item positive">
+              <span class="text-green-400">✓</span> Responsivo
+            </div>
+            <div class="stat-item neutral">
+              <span class="text-yellow-400">~</span> Context Switch
+            </div>
+            <div class="stat-item positive">
+              <span class="text-green-400">✓</span> Equitativo
+            </div>
+            <div class="stat-item neutral">
+              <span class="text-yellow-400">~</span> Quantum crítico
+            </div>
+          </div>
+          
+          <div class="algorithm-impact mt-3 p-2 bg-purple-900/20 rounded">
+            <p class="text-xs text-purple-200">
+              <strong>Impacto:</strong> Balanceia responsividade e overhead. Quantum pequeno = mais trocas de contexto.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- EDF Algorithm -->
+      <div class="algorithm-card bg-gradient-to-br from-orange-900/30 to-orange-800/20 border border-orange-500/30">
+        <div class="algorithm-header">
+          <h3 class="text-lg font-semibold text-orange-400 mb-2">⚡ EDF</h3>
+          <p class="text-xs text-orange-300 mb-3">Earliest Deadline First</p>
+        </div>
+        
+        <div class="algorithm-content">
+          <h4 class="font-semibold text-slate-200 mb-2">Como Funciona:</h4>
+          <ul class="text-sm text-slate-300 space-y-1 mb-4">
+            <li>• Prioriza processo com deadline mais próximo</li>
+            <li>• Preempção quando chega deadline menor</li>
+            <li>• Dinâmico e adaptativo</li>
+          </ul>
+          
+          <h4 class="font-semibold text-slate-200 mb-2">Características:</h4>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="stat-item positive">
+              <span class="text-green-400">✓</span> Tempo Real
+            </div>
+            <div class="stat-item negative">
+              <span class="text-red-400">✗</span> Complexo
+            </div>
+            <div class="stat-item positive">
+              <span class="text-green-400">✓</span> Otimizado
+            </div>
+            <div class="stat-item negative">
+              <span class="text-red-400">✗</span> Starvation
+            </div>
+          </div>
+          
+          <div class="algorithm-impact mt-3 p-2 bg-orange-900/20 rounded">
+            <p class="text-xs text-orange-200">
+              <strong>Impacto:</strong> Excelente para sistemas de tempo real. Pode causar starvation em processos longos.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comparison Table -->
+    <div class="mt-6 bg-slate-800/50 rounded-lg p-4 border border-slate-600/30">
+      <h3 class="text-lg font-semibold text-emerald-400 mb-3">📊 Comparação dos Algoritmos</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-slate-600/50">
+              <th class="text-left p-2 text-slate-300">Critério</th>
+              <th class="text-center p-2 text-blue-400">FCFS</th>
+              <th class="text-center p-2 text-purple-400">Round Robin</th>
+              <th class="text-center p-2 text-orange-400">EDF</th>
+            </tr>
+          </thead>
+          <tbody class="text-slate-300">
+            <tr class="border-b border-slate-700/30">
+              <td class="p-2 font-medium">Preempção</td>
+              <td class="text-center p-2">❌ Não</td>
+              <td class="text-center p-2">✅ Por tempo</td>
+              <td class="text-center p-2">✅ Por prioridade</td>
+            </tr>
+            <tr class="border-b border-slate-700/30">
+              <td class="p-2 font-medium">Tempo de Resposta</td>
+              <td class="text-center p-2">🔴 Alto</td>
+              <td class="text-center p-2">🟡 Médio</td>
+              <td class="text-center p-2">🟢 Baixo</td>
+            </tr>
+            <tr class="border-b border-slate-700/30">
+              <td class="p-2 font-medium">Throughput</td>
+              <td class="text-center p-2">🟢 Alto</td>
+              <td class="text-center p-2">🟡 Médio</td>
+              <td class="text-center p-2">🟢 Alto</td>
+            </tr>
+            <tr class="border-b border-slate-700/30">
+              <td class="p-2 font-medium">Simplicidade</td>
+              <td class="text-center p-2">🟢 Simples</td>
+              <td class="text-center p-2">🟡 Médio</td>
+              <td class="text-center p-2">🔴 Complexo</td>
+            </tr>
+            <tr>
+              <td class="p-2 font-medium">Uso Ideal</td>
+              <td class="text-center p-2">Batch</td>
+              <td class="text-center p-2">Interativo</td>
+              <td class="text-center p-2">Tempo Real</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Controls -->
+  <section class="control-panel mb-6 fade-in">
+    <h2 class="text-lg font-semibold mb-4 text-emerald-400">⚙️ Controles</h2>
+    <div class="flex flex-wrap gap-4 items-end">
+      <div class="flex flex-col">
+        <label class="form-label" for="algo">Algoritmo de escalonamento</label>
+        <select id="algo" class="form-select">
+          <option value="fcfs">FCFS (First-Come First-Served)</option>
+          <option value="rr">Round Robin</option>
+          <option value="edf">EDF (Earliest Deadline First)</option>
+        </select>
+      </div>
+      
+      <div class="flex flex-col">
+        <label class="form-label" for="quantum">Quantum (Round Robin)</label>
+        <input id="quantum" type="number" value="3" min="1" max="10" class="form-input w-32" />
+      </div>
+      
+      <button id="startBtn" class="btn-primary" aria-label="Iniciar simulação">
+        ▶️ Iniciar Simulação
+      </button>
+      
+      <button id="stopBtn" class="btn-danger hidden" aria-label="Parar simulação">
+        ⏹️ Parar Simulação
+      </button>
+      
+      <div id="loadingIndicator" class="hidden flex items-center gap-2 text-emerald-400" aria-live="polite">
+        <div class="loading-spinner" aria-hidden="true"></div>
+        <span>Simulando...</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Visualization -->
+  <main class="grid lg:grid-cols-3 gap-6 flex-1 visualization-grid">
+    <!-- Gantt Chart -->
+    <div class="lg:col-span-2 visualization-panel fade-in">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold text-emerald-400">
+          📊 Gráfico de Gantt - Execução dos Processos
+        </h2>
+        <div class="flex items-center gap-4 text-sm legend-container">
+          <div class="legend-item">
+            <div class="legend-color bg-emerald-500"></div>
+            <span>Executando</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color bg-orange-500"></div>
+            <span>Preemptado</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color bg-blue-500"></div>
+            <span>Concluído</span>
+          </div>
+        </div>
+      </div>
+      <div id="chart" class="chart-container" role="img" aria-label="Gráfico de Gantt mostrando execução dos processos"></div>
+    </div>
+    
+    <!-- Sidebar: Queue + Stats -->
+    <aside class="flex flex-col gap-6">
+      <!-- Process Queue -->
+      <div class="visualization-panel fade-in">
+        <h2 class="text-lg font-semibold mb-4 text-purple-400">
+          ⏳ Fila de Processos
+        </h2>
+        <div id="queue" role="region" aria-label="Lista de processos na fila de espera"></div>
+      </div>
+      
+      <!-- Performance Statistics -->
+      <div class="visualization-panel fade-in">
+        <h2 class="text-lg font-semibold mb-4 text-orange-400">
+          📈 Estatísticas de Performance
+        </h2>
+        <div id="stats" role="region" aria-label="Estatísticas de performance do sistema"></div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Educational Footer -->
+  <footer class="text-center text-slate-400 text-sm mt-6 fade-in">
+    <div class="control-panel">
+      <p class="mb-2">
+        💡 <strong>Dica:</strong> Experimente diferentes algoritmos e observe como eles afetam o tempo de espera e turnaround!
+      </p>
+  </footer>
+
+  <!-- JavaScript Module -->
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
