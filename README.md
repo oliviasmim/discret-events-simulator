@@ -127,34 +127,9 @@ Quando um processo nunca consegue executar:
 - Round Robin: Não tem starvation
 - EDF: Processos com deadline longo podem sofrer starvation
 
-## 🐛 Como Debuggar
-
-### Problemas Comuns
-1. **Simulação não inicia**: Verifique o servidor web
-2. **Gráfico não aparece**: Abra o console do navegador (F12)
-3. **Processos não executam**: Verifique se há erros no console
-
-### Logs Úteis
-O simulador imprime logs no console do navegador:
-```javascript
-// Exemplos de logs que você verá
-console.log('Processo P1 iniciou execução')
-console.log('Processo P2 foi preemptado')
-console.log('Sistema tem 3 processos na fila')
-```
-
-## 🤝 Contribuindo
-
-Este é um projeto educacional! Sugestões de melhorias:
-- Novos algoritmos (SJF, Priority Scheduling)
-- Mais métricas (CPU Utilization, Throughput)
-- Visualizações diferentes
-- Testes automatizados
 
 ## 📖 Referências
 
-- **Livro**: "Sistemas Operacionais Modernos" - Andrew Tanenbaum
-- **Curso**: Conceitos de Sistemas Operacionais
 - **Documentação**: MDN Web Docs para JavaScript
 
 ## 📝 Licença
