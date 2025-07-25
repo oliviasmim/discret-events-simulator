@@ -76,11 +76,10 @@ export function mountStats(root, bus) {
     const avgResponse = mean(responseTimes);
     const missedDeadlines = finished.filter(t => t.finish > t.deadline).length;
     
-    // Throughput (tasks per minute)
+    // Throughput
     const elapsedMinutes = (Date.now() - startTime) / 60000;
     const throughput = elapsedMinutes > 0 ? (completedCount / elapsedMinutes) : 0;
     
-    // Update UI with animations
     updateElement('totalTasks', totalTasks.toString());
     updateElement('completedTasks', completedCount.toString());
     updateElement('ta', avgTurnaround.toFixed(1) + 's');
@@ -91,7 +90,6 @@ export function mountStats(root, bus) {
   }
   
   function calculateWaitTime(task) {
-    // For preempted tasks, wait time is more complex
     // Wait time = Turnaround time - Execution time
     const turnaroundTime = task.finish - task.arrival;
     const executionTime = task.duration;

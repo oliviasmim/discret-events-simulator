@@ -81,7 +81,7 @@ export function mountChart(root, bus) {
 
   function createExecutionBlock(task, startTime, duration, isPreempted = false, isCompleted = false) {
     const block = document.createElement('div');
-    const width = duration * 16; // 16px per time unit
+    const width = duration * 16; // 16px 
     
     block.className = 'execution-block';
     block.style.width = `${width}px`;
@@ -111,16 +111,14 @@ export function mountChart(root, bus) {
 
   bus.on('taskStart', ({ task, now }) => {
     currentTime = Math.max(currentTime, now + 1);
-    updateTimeAxis(currentTime + 5); // Show a bit ahead
+    updateTimeAxis(currentTime + 5);
     
-    // Create row if it doesn't exist
     if (!taskRows.has(task.id)) {
       taskRows.set(task.id, nextRowIndex++);
       createProcessRow(task.id);
       executionHistory.set(task.id, []);
     }
     
-    // Record start of execution segment
     const history = executionHistory.get(task.id);
     history.push({ startTime: now, duration: 0, isPreempted: false });
   });
@@ -129,7 +127,6 @@ export function mountChart(root, bus) {
     currentTime = Math.max(currentTime, now + 1);
     updateTimeAxis(currentTime + 5);
     
-    // Update execution blocks for running tasks
     cpus.forEach(task => {
       if (!task) return;
       
@@ -138,14 +135,12 @@ export function mountChart(root, bus) {
         const currentSegment = history[history.length - 1];
         currentSegment.duration = now - currentSegment.startTime + 1;
         
-        // Update visual representation
         updateTaskVisualization(task.id);
       }
     });
   });
 
   bus.on('taskFinish', (task) => {
-    // Mark final block as completed
     const history = executionHistory.get(task.id);
     if (history && history.length > 0) {
       const finalSegment = history[history.length - 1];
@@ -154,7 +149,6 @@ export function mountChart(root, bus) {
     updateTaskVisualization(task.id);
   });
 
-  // Handle preemption (when task is removed from CPU)
   bus.on('taskPreempted', ({ task, now }) => {
     const history = executionHistory.get(task.id);
     if (history && history.length > 0) {
@@ -169,25 +163,22 @@ export function mountChart(root, bus) {
     const executionLine = document.getElementById(`line-${taskId}`);
     if (!executionLine) return;
     
-    // Clear existing blocks
     executionLine.innerHTML = '';
     
     const history = executionHistory.get(taskId) || [];
     let currentPosition = 0;
     
     history.forEach(segment => {
-      // Add gap if there's a time gap
       if (segment.startTime > currentPosition) {
         const gapDuration = segment.startTime - currentPosition;
         const gap = createWaitingGap(gapDuration);
         executionLine.append(gap);
       }
       
-      // Add execution block
       if (segment.duration > 0) {
         const block = createExecutionBlock(
           { id: taskId }, 
-          0, // Position handled by flexbox now
+          0,
           segment.duration, 
           segment.isPreempted && !segment.isCompleted,
           segment.isCompleted

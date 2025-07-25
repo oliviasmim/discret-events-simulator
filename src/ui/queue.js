@@ -33,7 +33,6 @@ export function mountQueue(root, bus) {
   
   bus.on('state', ({ ready }) => render(ready));
   bus.on('taskArrival', () => {
-    // Add a subtle pulse effect when new tasks arrive
     list.classList.add('pulse-soft');
     setTimeout(() => list.classList.remove('pulse-soft'), 1000);
   });
